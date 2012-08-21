@@ -1,5 +1,4 @@
-import SocketServer
-import SimpleHTTPServer
+import BaseHTTPServer
 import threading
 
 from gi.repository import GObject, Peas
@@ -28,8 +27,7 @@ class RhythmboxWeb(GObject.Object, Peas.Activatable):
 		group = RB.DisplayPageGroup.get_by_id ("library")
 		shell.append_display_page(self.source, group)
 		
-		Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
-		self.httpd = TCPServer(("", PORT), Handler)
+		self.httpd = HTTPServer(("", PORT), HTTPRequestHandler)
 
 		t = threading.Thread(target=self.httpd.serve_forever)
 		t.setDaemon(True) # don't hang on exit
@@ -45,8 +43,24 @@ class RhythmboxWeb(GObject.Object, Peas.Activatable):
 		self.httpd.socket.close()
 		self.httpd = None
 
-class TCPServer(SocketServer.TCPServer): 
+class HTTPServer(BaseHTTPServer.HTTPServer): 
 	allow_reuse_address = True 
+
+class HTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+	def do_GET(self):
+		path, query = self.get_path_and_query()
+		print "GET " + path
+		return None
+
+	def get_path_and_query(self):
+	        path = self.path
+
+		i = path.rfind('?')
+		if i >= 0:
+			path, query = path[:i], path[i+1:]
+		else:
+			query = ''
+		return path, query
 
 class PythonSource(RB.Source):
 	def __init__(self, **kwargs):
