@@ -8,7 +8,7 @@ from gi.repository import RB
 import gettext
 gettext.install('rhythmbox', RB.locale_dir())
 
-PORT = 8000
+PORT = 4444
 
 class RhythmboxWeb(GObject.Object, Peas.Activatable):
 	__gtype_name = 'RhythmboxWebPlugin'
@@ -29,7 +29,7 @@ class RhythmboxWeb(GObject.Object, Peas.Activatable):
 		shell.append_display_page(self.source, group)
 		
 		Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
-		self.httpd = SocketServer.TCPServer(("", PORT), Handler)
+		self.httpd = TCPServer(("", PORT), Handler)
 
 		t = threading.Thread(target=self.httpd.serve_forever)
 		t.setDaemon(True) # don't hang on exit
@@ -41,8 +41,12 @@ class RhythmboxWeb(GObject.Object, Peas.Activatable):
 		self.source.delete_thyself()
 		self.source = None
 
+		self.httpd.shutdown()
 		self.httpd.socket.close()
 		self.httpd = None
+
+class TCPServer(SocketServer.TCPServer): 
+	allow_reuse_address = True 
 
 class PythonSource(RB.Source):
 	def __init__(self, **kwargs):
