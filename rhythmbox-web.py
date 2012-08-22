@@ -72,10 +72,21 @@ class HTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 	def do_GET(self):
 		"""Serve a GET request."""
-		f = self.send_head()
-		if f:
-			self.copyfile(f, self.wfile)
-			f.close()
+		player = self.get_player()
+		if (self.path == '/cmd?play-pause'):
+			player.playpause(True)
+			self.send_200()
+		elif (self.path == '/cmd?prev'):
+			player.do_previous()
+			self.send_200()
+		elif (self.path == '/cmd?next'):
+			player.do_next()
+			self.send_200()
+		else:
+			f = self.send_head()
+			if f:
+				self.copyfile(f, self.wfile)
+				f.close()
 
 	def do_HEAD(self):
 		"""Serve a HEAD request."""
@@ -83,6 +94,11 @@ class HTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		if f:
 			f.close()
 
+	def send_200(self):
+		self.send_response(200)
+		self.end_headers()
+		return None
+	
 	def send_404(self):
 		self.send_error(404, "File not found")
 		return None
@@ -192,6 +208,9 @@ class HTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		else:
 			query = ''
 		return path, query
+
+	def get_player(self):
+		return self.server.plugin.object.props.shell_player
 
 class PythonSource(RB.Source):
 	def __init__(self, **kwargs):
