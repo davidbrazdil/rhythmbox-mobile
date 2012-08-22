@@ -25,17 +25,51 @@
 <div data-role="page" data-theme="c" data-content-theme="c">
 
 	<div data-role="header">
-		Rhythmbox Web
+		Rhythmbox Mobile
 	</div>
 
 	<div data-role="content">
 		<div class="content-secondary">
 			<div data-role="collapsible" data-collapsed="false" data-mini="true" data-iconpos="right" data-theme="f" data-content-theme="c">
 				<h3>Playback control</h3>
+				<!-- Playback buttons -->
 				<div class="ui-grid-b">
-					<div class="ui-block-a"><a href="#" onClick="send_cmd('prev');" class="playback_btn" data-role="button" data-mini="true"><img src="icon_prev.png" /></a></div>
-					<div class="ui-block-b"><a href="#" onClick="send_cmd('play-pause');" class="playback_btn" data-role="button" data-mini="true"><img src="icon_play.png" /></a></div>
-					<div class="ui-block-c"><a href="#" onClick="send_cmd('next');" class="playback_btn" data-role="button" data-mini="true"><img src="icon_next.png" /></a></div>
+					<!-- Button "previous" -->
+					<div class="ui-block-a">
+						<a href="#" 
+ 						   onClick="send_cmd('prev');" 
+						   class="playback_btn" 
+						   data-role="button" 
+						   data-mini="true" 
+						   data-corners="false"
+						   data-shadow="false">
+							<img src="icon_prev.png" />
+						</a>
+					</div>
+					<!-- Button "play/pause" -->
+					<div class="ui-block-b">
+						<a href="#" 
+ 						   onClick="send_cmd('play-pause');" 
+						   class="playback_btn" 
+						   data-role="button" 
+						   data-mini="true" 
+						   data-corners="false"
+						   data-shadow="false">
+							<img src="icon_play.png" />
+						</a>
+					</div>
+					<!-- Button "next" -->
+					<div class="ui-block-c">
+						<a href="#" 
+ 						   onClick="send_cmd('next');" 
+						   class="playback_btn" 
+						   data-role="button" 
+						   data-mini="true" 
+						   data-corners="false"
+						   data-shadow="false">
+							<img src="icon_next.png" />
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>
