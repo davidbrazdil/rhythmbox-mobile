@@ -1,9 +1,9 @@
 [Plugin]
 Loader=python
-Module=rhythmbox-web
+Module=rhythmbox-mobile
 IAge=2
-Name=RhythmboxWeb
+Name=Rhythmbox Mobile UI
 Description=
 Authors=David Brazdil <david.brazdil@gmail.com>
 Copyright=Copyright © 2012 David Brazdil
-Website=https://github.com/davidbrazdil/rhythmbox-web
+Website=https://github.com/davidbrazdil/rhythmbox-mobile

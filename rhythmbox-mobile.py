@@ -16,15 +16,15 @@ gettext.install('rhythmbox', RB.locale_dir())
 
 PORT = 4444
 
-class RhythmboxWeb(GObject.Object, Peas.Activatable):
-	__gtype_name = 'RhythmboxWeb'
+class RhythmboxMobile(GObject.Object, Peas.Activatable):
+	__gtype_name = 'RhythmboxMobile'
 	object = GObject.property(type=GObject.GObject)
 
 	def __init__(self):
 		GObject.Object.__init__(self)
 			
 	def do_activate(self):
-		print "activating rhythmbox-web plugin"
+		print "activating rhythmbox-mobile plugin"
 
 		# print dir(self)
 		# RB.find_plugin_data_file(self, "index.htm")
@@ -44,7 +44,7 @@ class RhythmboxWeb(GObject.Object, Peas.Activatable):
 		t.start()
 
 	def do_deactivate(self):
-		print "deactivating rhythmbox-web plugin"
+		print "deactivating rhythmbox-mobile plugin"
 
 		self.source.delete_thyself()
 		self.source = None
