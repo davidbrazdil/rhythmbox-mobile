@@ -4,10 +4,13 @@
 	margin-bottom: 10px;
 }
 
-/*.ui-corner-all { 
-	border-radius: 0px; 
-	-moz-border-radius-bottomright: 0px; 
-	-moz-border-radius-bottomleft: 0px; 
-	-moz-border-radius-topright: 0px; 
-	-moz-border-radius-topleft: 0px;
-}*/
+#playback-artist {
+	font-size: 90%;
+	font-weight: bold;
+	font-family: "Arial";
+}
+
+#playback-song {
+	font-size: 90%;
+	font-family: "Arial";
+}
