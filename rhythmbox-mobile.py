@@ -14,7 +14,8 @@ from gi.repository import RB
 import gettext
 gettext.install('rhythmbox', RB.locale_dir())
 
-PORT = 4444
+PORT_HTTP = 8888
+PORT_WS = 32910
 
 class RhythmboxMobile(GObject.Object, Peas.Activatable):
 	__gtype_name = 'RhythmboxMobile'
@@ -37,11 +38,14 @@ class RhythmboxMobile(GObject.Object, Peas.Activatable):
 		group = RB.DisplayPageGroup.get_by_id ("library")
 		shell.append_display_page(self.source, group)
 		
-		self.httpd = HTTPServer(("", PORT), self)
+		# Launch the WebSockets server
+		
+		# Launch the HTTP server
+		self.httpd = HTTPServer(("", PORT_HTTP), self)
+		self.httpd.serve_forever_thread()
 
-		t = threading.Thread(target=self.httpd.serve_forever)
-		t.setDaemon(True) # don't hang on exit
-		t.start()
+		# Connect to player notifications
+		# shell.props.shell_player.connect("playing-song-changed", self.handler_song_changed)
 
 	def do_deactivate(self):
 		print "deactivating rhythmbox-mobile plugin"
@@ -53,12 +57,25 @@ class RhythmboxMobile(GObject.Object, Peas.Activatable):
 		self.httpd.socket.close()
 		self.httpd = None
 
+#	def handler_song_changed(self, player, entry):
+#		print entry
+
 class HTTPServer(BaseHTTPServer.HTTPServer): 
 	allow_reuse_address = True 
 
 	def __init__(self, address, plugin):
 		BaseHTTPServer.HTTPServer.__init__(self, address, HTTPRequestHandler)
 		self.plugin = plugin
+		self.address = address
+
+	def serve_forever(self):
+		print "HTTP server running on http://localhost:" + str(self.address[1])
+		BaseHTTPServer.HTTPServer.serve_forever(self)
+
+	def serve_forever_thread(self):
+		t = threading.Thread(target=self.serve_forever)
+		t.setDaemon(True) # don't hang on exit
+		t.start()
 
 class HTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
@@ -223,7 +240,5 @@ class PythonSource(RB.Source):
 		songs.set_model(self.props.query_model)
 		songs.show_all()
 		self.pack_start(songs, expand=True, fill=True, padding=0)
-
-
 
 GObject.type_register(PythonSource)
