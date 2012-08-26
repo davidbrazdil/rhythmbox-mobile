@@ -1,4 +1,5 @@
 import http
+import ws
 
 from gi.repository import GObject, Peas
 from gi.repository import RB
@@ -19,9 +20,6 @@ class RhythmboxMobile(GObject.Object, Peas.Activatable):
 	def do_activate(self):
 		print "activating rhythmbox-mobile plugin"
 
-		# print dir(self)
-		# RB.find_plugin_data_file(self, "index.htm")
-
 		shell = self.object
 		db = shell.props.db
 		model = RB.RhythmDBQueryModel.new_empty(db)
@@ -31,13 +29,15 @@ class RhythmboxMobile(GObject.Object, Peas.Activatable):
 		shell.append_display_page(self.source, group)
 		
 		# Launch the WebSockets server
-		
+		self.ws = ws.WebSocketServer(("", PORT_WS))
+		self.ws.serve_forever_thread()
+
 		# Launch the HTTP server
-		self.httpd = http.HTTPServer(("", PORT_HTTP), self)
-		self.httpd.serve_forever_thread()
+		self.http = http.HTTPServer(("", PORT_HTTP), self)
+		self.http.serve_forever_thread()
 
 		# Connect to player notifications
-		# shell.props.shell_player.connect("playing-song-changed", self.handler_song_changed)
+		shell.props.shell_player.connect("playing-song-changed", self.handler_song_changed)
 
 	def do_deactivate(self):
 		print "deactivating rhythmbox-mobile plugin"
@@ -45,12 +45,12 @@ class RhythmboxMobile(GObject.Object, Peas.Activatable):
 		self.source.delete_thyself()
 		self.source = None
 
-		self.httpd.shutdown()
-		self.httpd.socket.close()
-		self.httpd = None
+		self.http.shutdown()
+		self.http.socket.close()
+		self.http = None
 
-#	def handler_song_changed(self, player, entry):
-#		print entry
+	def handler_song_changed(self, player, entry):
+		self.ws.send_all_clients("Song changed")
 
 class PythonSource(RB.Source):
 	def __init__(self, **kwargs):
