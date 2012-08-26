@@ -22,9 +22,7 @@ function websocket_onMessage(e) {
 
 	switch(json_data["notification-type"]) {
 		case "playback-update":
-			$("#playback-artist").html(json_data["artist"]);
-			$("#playback-album").html(json_data["album"]);
-			$("#playback-title").html(json_data["title"]);
+			playback_update(json_data["artist"], json_data["album"], json_data["title"], json_data["playing"]);
 			break;
 		default:
 			console.error("WebSocket unknown message");

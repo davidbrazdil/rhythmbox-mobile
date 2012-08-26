@@ -37,6 +37,16 @@
 		function refresh() {
 			websocket_connect();
 		}
+
+		function playback_update(artist, album, title, playing) {
+			$("#playback-artist").html(artist);
+			$("#playback-album").html(album);
+			$("#playback-title").html(title);
+			if (playing)
+				$("#playback-playpause").attr("src", "img/icon_pause.png");
+			else
+				$("#playback-playpause").attr("src", "img/icon_play.png");
+		}
 	</script>
 
 </head> 
@@ -73,7 +83,7 @@
 						   data-mini="true" 
 						   data-corners="false"
 						   data-shadow="false">
-							<img src="img/icon_prev.png" />
+							<img id="playback-prev" src="img/icon_prev.png" />
 						</a>
 					</div>
 					<!-- Button "play/pause" -->
@@ -85,7 +95,7 @@
 						   data-mini="true" 
 						   data-corners="false"
 						   data-shadow="false">
-							<img src="img/icon_play.png" />
+							<img id="playback-playpause" src="img/icon_play.png" />
 						</a>
 					</div>
 					<!-- Button "next" -->
@@ -97,13 +107,33 @@
 						   data-mini="true" 
 						   data-corners="false"
 						   data-shadow="false">
-							<img src="img/icon_next.png" />
+							<img id="playback-next" src="img/icon_next.png" />
 						</a>
 					</div>
 				</div>
 			</div>
+		</div>
+		<div class="content-primary">
+			<h3>Right-hand side</h3>
+			<p>
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a purus semper neque sodales pretium. Praesent at enim lacus. Suspendisse elementum erat sit amet massa semper non vestibulum neque sodales. Nulla facilisi. Nam luctus laoreet commodo. Nam vitae nunc nisi. Sed eu elit libero, quis facilisis arcu.
+			</p>
 
-			<div>&nbsp;</div>
+			<p>
+			Vivamus vestibulum malesuada nunc, at auctor mi iaculis eu. Fusce sit amet arcu sed tortor condimentum aliquet. Vestibulum mauris eros, mattis sed semper non, semper id orci. Donec accumsan mi et mi interdum fermentum. Quisque diam nunc, bibendum in euismod in, scelerisque et dui. Sed libero mi, semper sed facilisis sit amet, interdum ac quam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+			</p>
+
+			<p>
+			Aliquam porta commodo nisi ac ultrices. Sed ac lacinia odio. Suspendisse tempus dictum accumsan. Quisque ultrices nunc sed urna convallis id pulvinar ligula dignissim. Nulla eget magna sed purus vulputate dapibus. Maecenas eget urna et lectus dignissim condimentum quis placerat sem. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aliquam augue tortor, condimentum in posuere a, auctor et elit.
+			</p>
+
+			<p>
+			Nullam odio ante, condimentum a eleifend vel, tincidunt condimentum augue. Morbi mollis molestie lorem a accumsan. Ut ullamcorper varius lacinia. Integer ut purus at augue porta hendrerit. Aliquam sollicitudin congue interdum. Cras mattis arcu dui, quis semper tellus. Morbi facilisis blandit leo, at elementum purus adipiscing in. Curabitur aliquet vehicula adipiscing. Curabitur tristique tempus molestie.
+			</p>
+
+			<p>
+			Morbi sollicitudin, erat vitae mollis fermentum, quam sapien interdum justo, non pharetra augue neque sed felis. Sed euismod, ligula nec blandit lobortis, ligula nisi auctor metus, vitae rutrum ipsum erat vel massa. Nullam euismod, diam vitae sodales egestas, felis turpis viverra libero, vel pharetra sem enim nec dui. Fusce eleifend sagittis felis nec rhoncus. Maecenas eget leo a purus rhoncus lobortis. Integer massa est, convallis sed mollis a, dictum auctor erat. Donec consectetur, libero vel accumsan tristique, mi dui sollicitudin enim, sit amet dictum neque orci ac risus. Etiam orci libero, aliquet ac pharetra eu, ullamcorper aliquam felis. Etiam gravida felis eu quam pulvinar vitae consequat leo laoreet. Fusce elit est, bibendum non vulputate et, vulputate venenatis lectus. Vestibulum et pulvinar nisi. Nullam in dolor felis. Etiam in velit sit amet orci sagittis accumsan in ac lorem.
+			</p>
 
 			<div data-role="collapsible" data-mini="true" data-iconpos="right" data-theme="a" data-content-theme="c">
 				<h3>Debug console</h3>
@@ -131,28 +161,6 @@
 				<div id="debug-console">
 				</div>
 			</div>
-		</div>
-		<div class="content-primary">
-			<h3>Right-hand side</h3>
-<p>
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a purus semper neque sodales pretium. Praesent at enim lacus. Suspendisse elementum erat sit amet massa semper non vestibulum neque sodales. Nulla facilisi. Nam luctus laoreet commodo. Nam vitae nunc nisi. Sed eu elit libero, quis facilisis arcu.
-</p>
-
-<p>
-Vivamus vestibulum malesuada nunc, at auctor mi iaculis eu. Fusce sit amet arcu sed tortor condimentum aliquet. Vestibulum mauris eros, mattis sed semper non, semper id orci. Donec accumsan mi et mi interdum fermentum. Quisque diam nunc, bibendum in euismod in, scelerisque et dui. Sed libero mi, semper sed facilisis sit amet, interdum ac quam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-</p>
-
-<p>
-Aliquam porta commodo nisi ac ultrices. Sed ac lacinia odio. Suspendisse tempus dictum accumsan. Quisque ultrices nunc sed urna convallis id pulvinar ligula dignissim. Nulla eget magna sed purus vulputate dapibus. Maecenas eget urna et lectus dignissim condimentum quis placerat sem. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aliquam augue tortor, condimentum in posuere a, auctor et elit.
-</p>
-
-<p>
-Nullam odio ante, condimentum a eleifend vel, tincidunt condimentum augue. Morbi mollis molestie lorem a accumsan. Ut ullamcorper varius lacinia. Integer ut purus at augue porta hendrerit. Aliquam sollicitudin congue interdum. Cras mattis arcu dui, quis semper tellus. Morbi facilisis blandit leo, at elementum purus adipiscing in. Curabitur aliquet vehicula adipiscing. Curabitur tristique tempus molestie.
-</p>
-
-<p>
-Morbi sollicitudin, erat vitae mollis fermentum, quam sapien interdum justo, non pharetra augue neque sed felis. Sed euismod, ligula nec blandit lobortis, ligula nisi auctor metus, vitae rutrum ipsum erat vel massa. Nullam euismod, diam vitae sodales egestas, felis turpis viverra libero, vel pharetra sem enim nec dui. Fusce eleifend sagittis felis nec rhoncus. Maecenas eget leo a purus rhoncus lobortis. Integer massa est, convallis sed mollis a, dictum auctor erat. Donec consectetur, libero vel accumsan tristique, mi dui sollicitudin enim, sit amet dictum neque orci ac risus. Etiam orci libero, aliquet ac pharetra eu, ullamcorper aliquam felis. Etiam gravida felis eu quam pulvinar vitae consequat leo laoreet. Fusce elit est, bibendum non vulputate et, vulputate venenatis lectus. Vestibulum et pulvinar nisi. Nullam in dolor felis. Etiam in velit sit amet orci sagittis accumsan in ac lorem.
-</p>
 		</div>
 	</div>
 

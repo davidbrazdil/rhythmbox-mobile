@@ -2,6 +2,8 @@ import ws4py.websocket
 
 import threading
 import struct
+import json
+
 from base64 import b64encode
 from hashlib import sha1
 from mimetools import Message
@@ -18,6 +20,11 @@ class WebSocketServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 		self.address = address
 		self.clients = []
 
+		self.album = None
+		self.artist = None
+		self.title = None
+		self.playing = False
+
 	def serve_forever(self):
 		print "WebSockets server running on http://localhost:" + str(self.address[1])
 		SocketServer.TCPServer.serve_forever(self)
@@ -28,19 +35,39 @@ class WebSocketServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 		t.start()
 
 	def send_all_clients(self, message):
-		clients_alive = []
-		for x in self.clients:
-			try:
-				x.send_message(message)
-			except socket.error:
-				print "ws://" + x.client_address[0] + " is dead"
-			else:
-				clients_alive += [x]
-		self.clients = clients_alive
+		for client in self.clients:
+			if not client.finished:
+				self.send_client(client, message)
+
+	def send_client(self, client, message):
+		client.send_message(message)
+
+	def msg_playback_update(self):
+		return json.dumps({
+			"notification-type" : "playback-update",
+			"playing" : self.playing,
+			"artist" : self.artist,
+			"album" : self.album,
+			"title" : self.title
+		})
+
+	def update_playback_song(self, artist, album, title):
+		self.artist = artist
+		self.album = album
+		self.title = title
+		self.send_all_clients(self.msg_playback_update())
+
+	def update_playback_playing(self, playing):
+		self.playing = playing
+		self.send_all_clients(self.msg_playback_update())
+
+	def send_playback_status(self, client):
+		self.send_client(client, self.msg_playback_update())
 
 class WebSocketRequestHandler(SocketServer.StreamRequestHandler):
 	magic = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
 	messages = Queue.Queue()
+	finished = False
 
 	def setup(self):
 		SocketServer.StreamRequestHandler.setup(self)
@@ -50,17 +77,21 @@ class WebSocketRequestHandler(SocketServer.StreamRequestHandler):
 
 	def finish(self):
 		print "WebSockets closing " + self.client_address[0]
+		self.finished = True
 		SocketServer.StreamRequestHandler.finish(self)
 
 	def handle(self):
 		self.handshake()
+		self.server.send_playback_status(self)
 		while True:
 			msg = self.messages.get(True)
-#			print "ws://" + self.client_address[0] + " - " + msg
-			if self.ws_rfc:
-				self.websocket.send(msg)
-			else:
-				self.request.sendall('\x00' + msg.encode('utf-8') + '\xff')
+			try:
+				if self.ws_rfc:
+					self.websocket.send(msg)
+				else:
+					self.request.sendall('\x00' + msg.encode('utf-8') + '\xff')
+			except:
+				return					
 
 	def send_message(self, message):
 		self.messages.put(message, True)

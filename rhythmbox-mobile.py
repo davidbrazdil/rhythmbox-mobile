@@ -1,8 +1,6 @@
 import http
 import ws
 
-import json
-
 from gi.repository import GObject, Peas
 from gi.repository import RB
 
@@ -40,6 +38,7 @@ class RhythmboxMobile(GObject.Object, Peas.Activatable):
 
 		# Connect to player notifications
 		shell.props.shell_player.connect("playing-song-changed", self.handler_song_changed)
+		shell.props.shell_player.connect('playing-changed', self.handler_playing_changed)
 
 	def do_deactivate(self):
 		print "deactivating rhythmbox-mobile plugin"
@@ -55,16 +54,11 @@ class RhythmboxMobile(GObject.Object, Peas.Activatable):
 		artist = entry.get_string(RB.RhythmDBPropType.ARTIST)
 		album = entry.get_string(RB.RhythmDBPropType.ALBUM)
 		title = entry.get_string(RB.RhythmDBPropType.TITLE)
+		self.ws.update_playback_song(artist, album, title)
 
-		data = {
-			"notification-type" : "playback-update",
-			"playing" : True,
-			"artist" : artist,
-			"album" : album,
-			"title" : title
-		}
+	def handler_playing_changed(self, player, playing):
+		self.ws.update_playback_playing(playing)
 
-		self.ws.send_all_clients(json.dumps(data))
 
 class PythonSource(RB.Source):
 	def __init__(self, **kwargs):
