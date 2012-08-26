@@ -55,6 +55,9 @@ class HTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		elif (self.path == '/cmd?vol-down'):
 			player.set_volume_relative(-0.05)
 			self.send_200()
+		elif (self.path == '/cmd?toggle-mute'):
+			player.set_mute(not player.get_mute())
+			self.send_200()
 		else:
 			f = self.send_head()
 			if f:
