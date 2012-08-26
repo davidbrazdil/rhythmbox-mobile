@@ -61,8 +61,11 @@ class WebSocketServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 		self.playing = playing
 		self.send_all_clients(self.msg_playback_update())
 
-	def send_playback_status(self, client):
+	def keep_updating_playback_status(self, client):
 		self.send_client(client, self.msg_playback_update())
+		# keep updating it every five seconds
+		t = threading.Timer(5.0, self.keep_updating_playback_status, [client])
+		t.start()
 
 class WebSocketRequestHandler(SocketServer.StreamRequestHandler):
 	magic = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
@@ -82,7 +85,7 @@ class WebSocketRequestHandler(SocketServer.StreamRequestHandler):
 
 	def handle(self):
 		self.handshake()
-		self.server.send_playback_status(self)
+		self.server.keep_updating_playback_status(self)
 		while True:
 			msg = self.messages.get(True)
 			try:

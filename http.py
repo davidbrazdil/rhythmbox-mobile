@@ -10,7 +10,7 @@ import cgi
 import shutil
 from StringIO import StringIO
 
-class HTTPServer(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer): 
+class HTTPServer(BaseHTTPServer.HTTPServer): 
 	allow_reuse_address = True 
 
 	def __init__(self, address, plugin):
@@ -48,6 +48,12 @@ class HTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			self.send_200()
 		elif (self.path == '/cmd?next'):
 			player.do_next()
+			self.send_200()
+		elif (self.path == '/cmd?vol-up'):
+			player.set_volume_relative(0.05)
+			self.send_200()
+		elif (self.path == '/cmd?vol-down'):
+			player.set_volume_relative(-0.05)
 			self.send_200()
 		else:
 			f = self.send_head()

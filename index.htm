@@ -31,6 +31,8 @@
 			$("#playback-progressbar").removeClass('ui-corner-all');
 			$("#playback-progressbar div").removeClass('ui-corner-left');
 
+			window.playing = false;
+
 			refresh();
 		});
 
@@ -42,10 +44,14 @@
 			$("#playback-artist").html(artist);
 			$("#playback-album").html(album);
 			$("#playback-title").html(title);
-			if (playing)
-				$("#playback-playpause").attr("src", "img/icon_pause.png");
-			else
-				$("#playback-playpause").attr("src", "img/icon_play.png");
+			
+			if (window.playing != playing) {
+				window.playing = playing;
+				if (playing)
+					$("#playback-playpause").attr("src", "img/icon_pause.png");
+				else
+					$("#playback-playpause").attr("src", "img/icon_play.png");
+			}
 		}
 	</script>
 
@@ -108,6 +114,42 @@
 						   data-corners="false"
 						   data-shadow="false">
 							<img id="playback-next" src="img/icon_next.png" />
+						</a>
+					</div>
+					<!-- Button "volume down" -->
+					<div class="ui-block-a">
+						<a href="#" 
+ 						   onClick="send_cmd('vol-down');" 
+						   class="playback_btn" 
+						   data-role="button" 
+						   data-mini="true" 
+						   data-corners="false"
+						   data-shadow="false">
+							<img id="playback-voldown" src="img/icon_prev.png" />
+						</a>
+					</div>
+					<!-- Button "toggle mute" -->
+					<div class="ui-block-b">
+						<a href="#" 
+ 						   onClick="send_cmd('toggle-mute');" 
+						   class="playback_btn" 
+						   data-role="button" 
+						   data-mini="true" 
+						   data-corners="false"
+						   data-shadow="false">
+							<img id="playback-togglemute" src="img/icon_play.png" />
+						</a>
+					</div>
+					<!-- Button "volume up" -->
+					<div class="ui-block-c">
+						<a href="#" 
+ 						   onClick="send_cmd('vol-up');" 
+						   class="playback_btn" 
+						   data-role="button" 
+						   data-mini="true" 
+						   data-corners="false"
+						   data-shadow="false">
+							<img id="playback-volup" src="img/icon_next.png" />
 						</a>
 					</div>
 				</div>
