@@ -48,31 +48,96 @@ class WebSocketRequestHandler(SocketServer.StreamRequestHandler):
 		self.websocket = WebSocket(self.request)
 		print "WebSockets connection from " + self.client_address[0]
 
+	def finish(self):
+		print "WebSockets closing " + self.client_address[0]
+		SocketServer.StreamRequestHandler.finish(self)
+
 	def handle(self):
 		self.handshake()
 		while True:
 			msg = self.messages.get(True)
-			data = msg.encode('utf-8')
-			print "ws://" + self.client_address[0] + " - " + msg
-			self.websocket.send(data)
+#			print "ws://" + self.client_address[0] + " - " + msg
+			if self.ws_rfc:
+				self.websocket.send(msg)
+			else:
+				self.request.sendall('\x00' + msg.encode('utf-8') + '\xff')
 
 	def send_message(self, message):
 		self.messages.put(message, True)
 
 	def handshake(self):
-		data = self.request.recv(1024).strip()
+		data = self.request.recv(1024)
+
 		headers = Message(StringIO(data.split('\r\n', 1)[1]))
-		if headers.get("Upgrade", None) != "websocket":
+		body = data.split("\r\n\r\n")[1]
+
+		upgrade = headers.get("Upgrade", "");
+		if upgrade.lower() != "websocket":
+			print "WebSockets client " + self.client_address[0] + " wrong Upgrade"
 			return
-		key = headers['Sec-WebSocket-Key']
+
+		if headers.getheader('Sec-WebSocket-Key') != None:
+			self.ws_rfc = True
+			response = self.handshake_singleKey(headers)
+		elif (headers.getheader('Sec-WebSocket-Key1') != None) and (headers.getheader('Sec-WebSocket-Key2') != None):
+			self.ws_rfc = False
+			response = self.handshake_twoKeys(headers, body)
+		else:
+			print "WebSockets client " + self.client_address[0] + " wrong structure"
+			return
+
+		self.handshake_done = self.request.sendall(response)
+		self.server.clients += [self]
+		print "WebSockets client " + self.client_address[0] + " handshaken"
+		
+	def handshake_singleKey(self, headers):
+		key = headers.getheader('Sec-WebSocket-Key')
 		digest = b64encode(sha1(key + self.magic).hexdigest().decode('hex'))
 		response = 'HTTP/1.1 101 Switching Protocols\r\n'
 		response += 'Upgrade: websocket\r\n'
 		response += 'Connection: Upgrade\r\n'
 		response += 'Sec-WebSocket-Accept: %s\r\n\r\n' % digest
-		self.handshake_done = self.request.send(response)
-		self.server.clients += [self]
-		print "WebSockets client " + self.client_address[0] + " handshaken"
+		return response
+
+	def handshake_getDigest(self, key1, key2, body):
+		# Count spaces
+		nums1 = key1.count(" ")
+		nums2 = key2.count(" ")
+		# Join digits in the key
+		num1 = ''.join([x for x in key1 if x.isdigit()])
+		num2 = ''.join([x for x in key2 if x.isdigit()])
+		# Divide the digits by the num of spaces
+		key1 = int(int(num1) / int(nums1))
+		key2 = int(int(num2) / int(nums2))
+
+		# Pack into Network byte ordered 32 bit ints
+		import struct
+		key1 = struct.pack("!I", key1)
+		key2 = struct.pack("!I", key2)
+
+		# Concat key1, key2, and the the body of the client handshake and take the md5 sum of it
+		key = key1 + key2 + body
+		import hashlib
+		m = hashlib.md5()
+		m.update(key)
+		return m.digest()
+	
+	def handshake_twoKeys(self, headers, body):
+		key1 = headers.getheader('Sec-WebSocket-Key1')
+		key2 = headers.getheader('Sec-WebSocket-Key2')
+
+		d = self.handshake_getDigest(key1, key2, body)
+
+		response = "HTTP/1.1 101 WebSocket Protocol Handshake\r\n"
+		response += "Upgrade: WebSocket\r\n"
+		response += "Connection: Upgrade\r\n"
+		response += "Sec-WebSocket-Origin: " + headers.getheader("Origin") + "\r\n"
+		response += "Sec-WebSocket-Location: ws://" + headers.getheader("Host") + "/\r\n"
+		response += "Sec-WebSocket-Protocol: " + headers.getheader("Sec-WebSocket-Protocol") + "\r\n"
+		response += "\r\n"
+		response += d
+
+		return response
 
 class WebSocket(ws4py.websocket.WebSocket):
 	def received_message(self, message):

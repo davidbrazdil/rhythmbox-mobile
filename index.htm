@@ -5,14 +5,19 @@
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 
-	<link type="text/css" href="css/redmond/jquery-ui-1.8.23.custom.css" rel="stylesheet" />
-	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css" />
-	<link rel="stylesheet" href="css/split-view.css" />
-	<link rel="stylesheet" href="css/custom.css" />
-	<!-- <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script> -->
-	<script type="text/javascript" src="js/jquery-1.8.0.min.js"></script>
-	<script type="text/javascript" src="js/jquery-ui-1.8.23.custom.min.js"></script>
-	<script src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="jquery/css/redmond/jquery-ui-1.8.23.custom.css" />
+	<link type="text/css" rel="stylesheet" href="jquery-mobile/jquery.mobile-1.1.1.min.css" />
+	<link type="text/css" rel="stylesheet" href="jquery-mobile/css/split-view.css" />
+
+	<script type="text/javascript" src="jquery/js/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="jquery/js/jquery-ui-1.8.23.custom.min.js"></script>
+	<script type="text/javascript" src="jquery-mobile/jquery.mobile-1.1.1.min.js"></script>
+
+	<script type="text/javascript" src="js/reconnecting-websocket.js"></script>
+
+	<link type="text/css" rel="stylesheet" href="site.css" />
+	<script type="text/javascript" src="js/console.js"></script>
+	<script type="text/javascript" src="js/websocket.js"></script>
 
 	<script>
 		function send_cmd(cmd) {
@@ -20,18 +25,18 @@
 			xmlhttp.open("GET","cmd?" + cmd,true);
 			xmlhttp.send();
 		}
-
+	
 		$(function() {
 			$("#playback-progressbar").progressbar({value: 37});
 			$("#playback-progressbar").removeClass('ui-corner-all');
 			$("#playback-progressbar div").removeClass('ui-corner-left');
 
-			var ws = new WebSocket("ws://localhost:32910");
-			ws.onopen = function(e) { alert("ws opened"); };
-			ws.onmessage = function(e) { alert(e.data); };
-			ws.onclose = function(e) { alert("ws closed"); };
-			ws.onerror = function(e) { alert("ws error"); };
+			refresh();
 		});
+
+		function refresh() {
+			websocket_connect();
+		}
 	</script>
 
 </head> 
@@ -50,8 +55,9 @@
 				<h3>Playback control</h3>
 
 				<!-- Song info -->
+				<div id="playback-title">&nbsp;</div>
+				<div id="playback-album">&nbsp;</div>
 				<div id="playback-artist">&nbsp;</div>
-				<div id="playback-song">&nbsp;</div>
 
 				<!-- Progress bar -->
 				<div id="playback-progressbar"></div>
@@ -94,6 +100,35 @@
 							<img src="img/icon_next.png" />
 						</a>
 					</div>
+				</div>
+			</div>
+
+			<div>&nbsp;</div>
+
+			<div data-role="collapsible" data-mini="true" data-iconpos="right" data-theme="a" data-content-theme="c">
+				<h3>Debug console</h3>
+				
+				<div data-role="controlgroup" data-type="horizontal" id="debug-console-buttons">
+					<a 	href="#" 
+							onclick="refresh();"
+							data-role="button" 
+							data-mini="true" 
+							data-inline="true" 
+							data-theme="b" 
+							data-icon="refresh" 
+							data-iconpos="notext">Reconnect</a>
+					<a 	href="#" 
+							id="debug-console-clear"
+							onclick="console_clear();"
+							data-role="button" 
+							data-mini="true" 
+							data-inline="true" 
+							data-theme="b" 
+							data-icon="delete" 
+							data-iconpos="notext">Clear</a>
+				</div>
+
+				<div id="debug-console">
 				</div>
 			</div>
 		</div>

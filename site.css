@@ -1,0 +1,36 @@
+#playback-progressbar {
+	height: 24px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+#playback-artist {
+	font-size: 90%;
+	font-family: "Arial";
+}
+
+#playback-title {
+	font-size: 90%;
+	font-weight: bold;
+	font-family: "Arial";
+}
+
+#playback-album {
+	font-size: 90%;
+	font-family: "Arial";
+}
+
+#debug-console-buttons {
+	float: right;
+}
+
+#debug-console {
+	font-family: monospace;
+	font-size: 80%;
+	font-weight: bold;
+	min-height: 40px;
+}
+
+.debug-console-error {
+	color: red;
+}

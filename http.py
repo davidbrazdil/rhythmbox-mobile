@@ -1,4 +1,6 @@
 import BaseHTTPServer
+import SocketServer
+
 import threading
 import posixpath
 import urllib
@@ -8,7 +10,7 @@ import cgi
 import shutil
 from StringIO import StringIO
 
-class HTTPServer(BaseHTTPServer.HTTPServer): 
+class HTTPServer(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer): 
 	allow_reuse_address = True 
 
 	def __init__(self, address, plugin):
